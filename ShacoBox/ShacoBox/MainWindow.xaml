@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ShacoBox"
         mc:Ignorable="d"
-        Title="MainWindow" Height="122.141" Width="525" WindowStartupLocation="CenterScreen" AllowsTransparency="True" Background="#02FFFFFF" WindowStyle="None" MouseDown="Window_MouseDown">
+        Title="MainWindow" Height="122.141" Width="525" WindowStartupLocation="CenterScreen" AllowsTransparency="True" Background="#02FFFFFF" WindowStyle="None" ResizeMode="CanResizeWithGrip"  MouseDown="Window_MouseDown" KeyUp="Window_KeyUp" Topmost="True">
     <Border BorderBrush="AliceBlue" BorderThickness="5">
         <Grid  Margin="5">
             <Viewbox HorizontalAlignment="Center" VerticalAlignment="Center"  >
