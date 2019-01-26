@@ -5,8 +5,7 @@ using System.Text;
 
 namespace ShacoBox
 {
-    public class Configuration
+    class Class1
     {
-        public static string ShowFormat = @"hh\:mm\:ss";
     }
 }

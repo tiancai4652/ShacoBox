@@ -1,6 +1,8 @@
-﻿using System;
+﻿using CSScriptLibrary;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -26,23 +28,10 @@ namespace ShacoBox
         public MainWindow()
         {
             InitializeComponent();
-            TimeUpdateThread = new Thread(RealTimeUpdate);
+            TimeUpdateThread = new Thread(TimeUpdate);
             TimeUpdateThread.IsBackground = true;
             TimeUpdateThread.Start();
             this.DataContext = this;
-
-            IntPtr hWnd = new WindowInteropHelper(Application.Current.MainWindow).Handle;
-            IntPtr hWndProgMan = FindWindow("Progman", "Program Manager");
-            SetParent(hWnd, hWndProgMan);
-            var handle = new WindowInteropHelper(Application.Current.MainWindow).Handle;
-            IntPtr hprog = FindWindowEx(
-                FindWindowEx(
-                    FindWindow("Progman", "Program Manager"),
-                    IntPtr.Zero, "SHELLDLL_DefView", ""
-                ),
-                IntPtr.Zero, "SysListView32", "FolderView"
-            );
-            SetWindowLong(handle, GWL_HWNDPARENT, hprog);
         }
 
         string _ShowTime;
@@ -59,16 +48,23 @@ namespace ShacoBox
             }
         }
         public Thread TimeUpdateThread { get; set; }
-        private void RealTimeUpdate()
+        private void TimeUpdate()
         {
+            string scriptFile = @"G:\MyGitHub\ShacoBox\ShacoBox\ShacoBox\bin\Debug\Config\DeadLine";
+            string scriptStr = File.ReadAllText(scriptFile);
+            var action =CSScript.CreateAction(scriptStr);
             while (true)
             {
-                ShowTime = DateTime.Now.ToString(Configuration.ShowFormat);
+                TimeSpan ts = (TimeSpan)action(new DateTime(2019, 1, 16, 20, 0, 0));
+                //TimeSpan ts = (TimeSpan)action(DateTime.Now);
+                if (ts.TotalSeconds <= 0)
+                {
+                    ShowTime = "00:00:00";
+                }
+                ShowTime = ts.ToString(Configuration.ShowFormat);
                 Thread.Sleep(100);
             }
         }
-
-
 
         #region Import
         [DllImport("user32.dll", SetLastError = true)]
@@ -87,6 +83,7 @@ namespace ShacoBox
 
         private void Window_KeyUp(object sender, KeyEventArgs e)
         {
+            #region Esc
             if (e.Key.Equals(Key.Escape))
             {
                 if (MessageBox.Show("确认退出吗?", "温馨提示", MessageBoxButton.OKCancel).Equals(MessageBoxResult.OK))
@@ -102,6 +99,17 @@ namespace ShacoBox
                     this.Close();
                 }
             }
+            #endregion
+
+            #region Enter
+            if (e.Key.Equals(Key.Enter))
+            {
+                InputView iv = new InputView();
+                iv.ShowDialog();
+            }
+
+
+            #endregion
         }
         private void Window_MouseDown(object sender, MouseButtonEventArgs e)
         {
